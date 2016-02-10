@@ -9,15 +9,20 @@ class Symbol:
     def __repr__(self):
         return str(self.name)
 
+
+def bool_convert(value):
+    return True if '#t' == value else False
+
 TOKEN_TYPES = (
-    #(convert_bool, re.compile('(#[tf])')),
     (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
     (int, re.compile('(0|[1-9]+[0-9]*)')),
     (str, re.compile('"([^"]*)"')),
-    (Symbol, re.compile('([^\(\)\'"\s]+)'))
+    (Symbol, re.compile('([^\(\)\'"\s]+)')),
+    (bool_convert, re.compile('(#[tf])'))
 )
 
 def find_atom(line, tokens):
+
     if line.startswith(';'):
         return ''
 
@@ -47,6 +52,7 @@ def _tokenize(line, tokens):
         return
 
     r = find_atom(line, tokens)
+    
     if None != r:
         _tokenize(r, tokens)
         return
