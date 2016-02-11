@@ -13,8 +13,44 @@ class Symbol:
 def bool_convert(value):
     return True if '#t' == value else False
 
+def char_convert(value):
+    char = str(value)
+    return char
+
+escape_dict={
+
+           '\a':r'\a',
+           '\b':r'\b',
+           '\c':r'\c',
+           '\f':r'\f',
+           '\n':r'\n',
+           '\r':r'\r',
+           '\t':r'\t',
+           '\v':r'\v',
+           '\'':r'\'',
+           '\"':r'\"',
+           '\0':r'\0',
+           '\1':r'\1',
+           '\2':r'\2',
+           '\3':r'\3',
+           '\4':r'\4',
+           '\5':r'\5',
+           '\6':r'\6',
+           '\8':r'\8',
+           '\9':r'\9'
+}
+
+def raw(text):
+    """Returns a raw string representation of text"""
+    new_string=''
+    for char in text:
+        try: new_string+=escape_dict[char]
+        except KeyError: new_string+=char
+    return new_string
+
 TOKEN_TYPES = (
     (bool_convert, re.compile('(#[tf])')),
+    (char_convert,re.compile(r'#/(\w)')),
     (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
     (int, re.compile('(0|[1-9]+[0-9]*)')),
     (str, re.compile('"([^"]*)"')),
@@ -46,7 +82,16 @@ def find_token(line, tokens):
     return None
 
 def _tokenize(line, tokens):
+    
     line = line.lstrip()
+
+    line = raw(line)
+
+    print(line)
+
+    line = line.replace("\\",'/')
+
+    print(line)
 
     if len(line) == 0:
         return
