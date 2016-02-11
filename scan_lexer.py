@@ -9,6 +9,9 @@ class Symbol:
     def __repr__(self):
         return str(self.name)
 
+    def __eq__(self, a_string):
+        return self.name == a_string
+
 
 def bool_convert(value):
     return True if '#t' == value else False
