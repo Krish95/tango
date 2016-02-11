@@ -17,6 +17,10 @@ def istrue(exp):
     else:
         return True
 
+def eprogn(exps, env):
+    results = [evaluate(exp, env) for exp in exps]
+    return results[-1]
+
 def evaluate(exp, env = global_env):
     # pdb.set_trace()
     # Is exp an atom?
@@ -27,7 +31,7 @@ def evaluate(exp, env = global_env):
             except KeyError:
                 print("No such Symbol found.")
                 return None
-        elif True in map(lambda x: isinstance(exp, x), atom_types):
+        elif True in [isinstance(exp, x) for x in atom_types]:
             return exp
         else:
             raise TypeError("Unknown type atom", exp)
@@ -45,7 +49,7 @@ def evaluate(exp, env = global_env):
         else:
             return evaluate(exp[3], env)
     elif exp[0] == "begin":
-        eprogn(exp[1], env)
+        return eprogn(exp[1:], env)
     elif exp[0] == "set!":
         update(exp[1], env, evaluate(exp[2], env))
     elif exp[0] == "lambda":
