@@ -90,11 +90,11 @@ def _tokenize(line, tokens):
 
     line = raw(line)
 
-    print(line)
+    # print(line)
 
     line = line.replace("\\",'/')
 
-    print(line)
+    # print(line)
 
     if len(line) == 0:
         return
