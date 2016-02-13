@@ -4,35 +4,14 @@ from functools import reduce
 import operator
 
 
-global_env = {
-        "car"   : lambda x : x[0],
-        "cdr"   : lambda x : x[1:],
-        "max"   : max,
-        "min"   : min,
-        "+"     : lambda *x: reduce(operator.add, list(x)),
-        "-"     : lambda *x: reduce(operator.sub, list(x))
-        }
-
-
-def atom(s):
-    return not isinstance(s, list)
-
-def istrue(exp):
-    if exp == False:
-        return False
-    else:
-        return True
-
-def eprogn(exps, env):
-    results = [evaluate(exp, env) for exp in exps]
-    return results[-1]
-
-def invoke(fn, arg_list):
-    # pdb.set_trace()
-    return fn(*arg_list)
-
-def evlist(l, env):
-    return [evaluate(x, env) for x in l]
+global_env = [
+        ("car"   , lambda x : x[0]) ,
+        ("cdr"   , lambda x : x[1:]) ,
+        ("max"   , max) ,
+        ("min"   , min) ,
+        ("+"     , lambda *x: reduce(operator.add, list(x))) ,
+        ("-"     , lambda *x: reduce(operator.sub, list(x)))
+]
 
 
 def evaluate(exp, env = global_env):
@@ -40,11 +19,7 @@ def evaluate(exp, env = global_env):
     # Is exp an atom?
     if atom(exp):
         if type(exp) == Symbol:
-            try:
-                return global_env[str(exp)]
-            except KeyError:
-                print("No such Symbol found.")
-                return None
+           return lookup(exp, env)
         elif True in [isinstance(exp, x) for x in [int, float, str, bool]]:
             return exp
         else:
@@ -67,16 +42,62 @@ def evaluate(exp, env = global_env):
     elif exp[0] == "set!":
         update(exp[1], env, evaluate(exp[2], env))
     elif exp[0] == "lambda":
-        make_function(exp[1], exp[2:], env)
+        return make_function(exp[1], exp[2:], env)
 
     # exp is function application
     else:
         return invoke(evaluate(exp[0], env), evlist(exp[1:], env))
 
 
-def update(var, env, value):
-    raise Exception("set! not implemented.")
+def atom(s):
+    return not isinstance(s, list)
 
-def make_function(params, body):
-    raise Exception("lambdas not implemented.")
+def istrue(exp):
+    if exp == False:
+        return False
+    else:
+        return True
+
+def eprogn(exps, env):
+    results = [evaluate(exp, env) for exp in exps]
+    return results[-1]
+
+def invoke(fn, arg_list):
+    # pdb.set_trace()
+    return fn(*arg_list)
+
+def evlist(l, env):
+    return [evaluate(x, env) for x in l]
+
+# update is impure.
+def update(var, env, value):
+    # pdb.set_trace()
+    for i in range(len(env)):
+        if env[i][0] == var:
+            env[i] = (var, value)
+            return
+    raise Exception("No such symbol found: ", var)
+        
+def make_function(variables, body, env):
+    return lambda *values : evaluate(body[0], extend(env, variables, list(values)))
+
+def lookup(var, env):
+    for u, v in env:
+        if u == var:
+
+
+
+            return v
+    raise Exception("No such binding: ", var)
+
+def extend(env, variables, values):
+    if len(variables) != len(values):
+        raise ValueError("Too few or too many values.")
+    else:
+        bindings = list(zip(variables, values))
+        return bindings + env
+
+
+
+
 
