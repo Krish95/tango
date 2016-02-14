@@ -20,6 +20,9 @@ def char_convert(value):
     char = str(value)
     return char
 
+def is_smbl(value):
+    return isinstance(value, Symbol)
+
 escape_dict={
 
            '\a':r'\a',
