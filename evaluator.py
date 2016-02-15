@@ -15,7 +15,7 @@ global_env = [
 
 
 def evaluate(exp, env = global_env):
-    # pdb.set_trace()
+    pdb.set_trace()
     # Is exp an atom?
     if atom(exp):
         if type(exp) == Symbol:
@@ -84,9 +84,6 @@ def make_function(variables, body, env):
 def lookup(var, env):
     for u, v in env:
         if u == var:
-
-
-
             return v
     raise Exception("No such binding: ", var)
 

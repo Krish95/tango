@@ -1,6 +1,21 @@
 
 import scan_lexer,evaluator
 import readline
+import re,pdb
+
+def read_form():
+
+    unmatched_parantheses = 0
+    lines = ""
+    print("=>",end="")
+    while True:
+        line = input()
+        lines = lines + line
+        if line.endswith("/"):
+            lines = lines + ' '
+            print("... ",end="")  
+        else:
+            return lines            
 
 class REPL:
 
@@ -29,16 +44,10 @@ class REPL:
 
     def roll(self):
         stored_tokens = []
-
+        #pdb.set_trace()
         while True:
-            try:
-                line = input("py-scheme>> ").strip()
-            except EOFError:
-                print
-                break
-
-            if not line:
-                continue
+            
+            line = read_form()
 
             try:
                 tokens = scan_lexer.tokenize(line)
@@ -48,14 +57,14 @@ class REPL:
 
             stored_tokens += tokens
 
-            ast, balance = scan_lexer.prstree_balance(stored_tokens)
+            ast = scan_lexer.prstree_balance(stored_tokens)
 
-            if balance > 0:
-                continue
-            elif balance < 0:
-                print('Unexpected ")"')
-                stored_tokens = []
-                continue
+            # if balance > 0:
+            #     continue
+            # elif balance < 0:
+            #     print('Unexpected ")"')
+            #     stored_tokens = []
+            #     continue
 
             stored_tokens = []
 

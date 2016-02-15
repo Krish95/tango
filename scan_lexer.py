@@ -1,4 +1,5 @@
 import re
+import pdb
 from collections import defaultdict
 
 class Symbol:
@@ -89,13 +90,14 @@ def find_token(line, tokens):
 
 def _tokenize(line, tokens):
     
+    pdb.set_trace()
     line = line.lstrip()
 
     line = raw(line)
 
     # print(line)
 
-    line = line.replace("\\",'/')
+    #line = line.replace("\\",'/')
 
     # print(line)
 
@@ -134,6 +136,24 @@ def tokenize_from_file(fname):
 
     return tokens
 
+# def prstree_balance(tokens,depth=0):
+#     "Read an expression from a sequence of tokens."
+#     if len(tokens) == 0:
+#         raise SyntaxError('EOF error')
+#     token = tokens.pop(0)
+#     if '(' == token:
+#         lists = defaultdict(list)  
+#         depth+=1      
+#         while tokens[0] != ')':
+#             lists[depth-1].append(prstree_balance(tokens))
+#         depth-=1
+#         tokens.pop(0) # pop off ')'
+#         return lists[0]
+#     elif ')' == token:
+#         raise SyntaxError('Mismatched )')
+#     else:
+#         return token
+
 def prstree_balance(tokens):
 
     lists = defaultdict(list)
@@ -147,9 +167,14 @@ def prstree_balance(tokens):
             lists[depth-1].append(lists[depth])
             del(lists[depth])
             depth -= 1
+            if depth < 0:
+                raise Exception("Unexpected )")
+                return
         else:
             lists[depth].append(tokens[i])
 
         i += 1
 
-    return (lists[0], depth)
+    return lists[0]
+
+
