@@ -66,6 +66,16 @@ class REPL:
             #     stored_tokens = []
             #     continue
 
+            """ Replacing the string format"""
+            re_str = re.compile('(\..*?\.)')
+            for l in ast:
+            	ind_out = ast.index(l)
+            	for x in l:
+            		if scan_lexer.is_str(x):
+            			ind_in = ast[ind_out].index(x)
+            			ast[ind_out][ind_in] = str(x).strip('\.')
+          
+
             stored_tokens = []
 
             for expr in ast:

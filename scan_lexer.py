@@ -2,6 +2,17 @@ import re
 import pdb
 from collections import defaultdict
 
+class Str:
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return str(self.name)
+
+    def __eq__(self, a_string):
+        return self.name == a_string
+
 class Symbol:
 
     def __init__(self, name):
@@ -13,6 +24,8 @@ class Symbol:
     def __eq__(self, a_string):
         return self.name == a_string
 
+def is_str(value):
+    return isinstance(value,Str)
 
 def bool_convert(value):
     return True if '#t' == value else False
@@ -56,6 +69,7 @@ def raw(text):
     return new_string
 
 TOKEN_TYPES = (
+    (Str,re.compile('(\..*?\.)')), #String class
     (bool_convert, re.compile('(#[tf])')),
     (char_convert,re.compile(r'#/(\w)')),
     (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
@@ -90,14 +104,19 @@ def find_token(line, tokens):
 
 def _tokenize(line, tokens):
     
-    pdb.set_trace()
+    #pdb.set_trace()
     line = line.lstrip()
 
     line = raw(line)
 
     # print(line)
+    
+    line = line.replace("\\",'/')
 
-    #line = line.replace("\\",'/')
+
+    line = line.replace('/"',".")
+
+    #print(line)
 
     # print(line)
 
