@@ -15,7 +15,18 @@ def read_form():
             lines = lines + ' '
             print("... ",end="")  
         else:
-            return lines            
+            return lines   
+
+def str_format(ast):
+      re_str = re.compile('(\..*?\.)')
+      for l in ast:
+            ind_out = ast.index(l)
+            if isinstance(l,list):
+                  ast[ind_out]=str_format(l)
+            elif scan_lexer.is_str(l):
+                  ind_in = ast[ind_out].index(x)
+                  ast[ind_out][ind_in] = str(x).strip('\.')  
+      return ast           
 
 class REPL:
 
@@ -67,17 +78,18 @@ class REPL:
             #     continue
 
             """ Replacing the string format"""
-            re_str = re.compile('(\..*?\.)')
-            for l in ast:
-            	ind_out = ast.index(l)
-            	if isinstance(l,list):
-            		for x in l:
-            			if scan_lexer.is_str(x):
-            				ind_in = ast[ind_out].index(x)
-            				ast[ind_out][ind_in] = str(x).strip('\.')
-            	elif scan_lexer.is_str(l):
-            		ind_in = ast[ind_out].index(x)
-            		ast[ind_out][ind_in] = str(x).strip('\.')          
+            # re_str = re.compile('(\..*?\.)')
+            # for l in ast:
+            # 	ind_out = ast.index(l)
+            # 	if isinstance(l,list):
+            # 		for x in l:
+            # 			if scan_lexer.is_str(x):
+            # 				ind_in = ast[ind_out].index(x)
+            # 				ast[ind_out][ind_in] = str(x).strip('\.')
+            # 	elif scan_lexer.is_str(l):
+            # 		ind_in = ast[ind_out].index(x)
+            # 		ast[ind_out][ind_in] = str(x).strip('\.')   
+            ast = str_format(ast)        
 
             stored_tokens = []
 
@@ -108,6 +120,6 @@ class REPL:
         """Supply known_names in the present scope add the variables present too.
         After adding Scope."""
 
-        known_names = ["quote","if","begin","set","lambda"]
+        known_names = ["quote","if","begin","set!","lambda"]
 
         return [var for var in known_names if var.startswith(name)]
