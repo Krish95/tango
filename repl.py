@@ -70,11 +70,14 @@ class REPL:
             re_str = re.compile('(\..*?\.)')
             for l in ast:
             	ind_out = ast.index(l)
-            	for x in l:
-            		if scan_lexer.is_str(x):
-            			ind_in = ast[ind_out].index(x)
-            			ast[ind_out][ind_in] = str(x).strip('\.')
-          
+            	if isinstance(l,list):
+            		for x in l:
+            			if scan_lexer.is_str(x):
+            				ind_in = ast[ind_out].index(x)
+            				ast[ind_out][ind_in] = str(x).strip('\.')
+            	elif scan_lexer.is_str(l):
+            		ind_in = ast[ind_out].index(x)
+            		ast[ind_out][ind_in] = str(x).strip('\.')          
 
             stored_tokens = []
 
