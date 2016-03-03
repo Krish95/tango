@@ -54,6 +54,7 @@ class REPL:
         readline.set_completer(self.completer)
 
     def roll(self):
+    
         stored_tokens = []
         #pdb.set_trace()
         while True:
