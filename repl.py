@@ -10,7 +10,7 @@ def read_form():
     print("=>",end="")
     while True:
         line = input()
-        lines = lines + line
+        lines = lines + line.rstrip("/")
         if line.endswith("/"):
             lines = lines + ' '
             print("... ",end="")  
@@ -90,7 +90,7 @@ class REPL:
             # 	elif scan_lexer.is_str(l):
             # 		ind_in = ast[ind_out].index(x)
             # 		ast[ind_out][ind_in] = str(x).strip('\.')   
-            ast = str_format(ast)        
+            ast = str_format(ast)    
 
             stored_tokens = []
 
