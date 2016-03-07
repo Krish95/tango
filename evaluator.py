@@ -1,17 +1,6 @@
 import pdb
 from scan_lexer import Symbol
-from functools import reduce
-import operator
-
-
-global_env = [
-        ("car"   , lambda x : x[0]) ,
-        ("cdr"   , lambda x : x[1:]) ,
-        ("max"   , max) ,
-        ("min"   , min) ,
-        ("+"     , lambda *x: reduce(operator.add, list(x))) ,
-        ("-"     , lambda *x: reduce(operator.sub, list(x)))
-]
+from global_env import *
 
 
 def evaluate(exp, env = global_env):
@@ -41,6 +30,14 @@ def evaluate(exp, env = global_env):
         return eprogn(exp[1:], env)
     elif exp[0] == "set!":
         update(exp[1], env, evaluate(exp[2], env))
+    
+    elif exp[0] == "define":
+        # pdb.set_trace()
+        if exp[1] in dict(env):
+            update(exp[1], env, evaluate(exp[2], env))
+        else:
+            env.insert(0, (exp[1], evaluate(exp[2])))
+
     elif exp[0] == "lambda":
         return make_function(exp[1], exp[2:], env)
 
@@ -49,8 +46,6 @@ def evaluate(exp, env = global_env):
         return invoke(evaluate(exp[0], env), evlist(exp[1:], env))
 
 
-def atom(s):
-    return not isinstance(s, list)
 
 def istrue(exp):
     if exp == False:

@@ -24,6 +24,9 @@ class Symbol:
     def __eq__(self, a_string):
         return self.name == a_string
 
+    def __hash__(self):
+        return hash(str(self.name))
+
 def is_str(value):
     return isinstance(value,Str)
 
