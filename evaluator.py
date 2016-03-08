@@ -3,12 +3,12 @@ from scan_lexer import Symbol
 from global_env import *
 
 
-def evaluate(exp, env = global_env):
+def evaluate(exp, envs = [global_env]):
     #pdb.set_trace()
     # Is exp an atom?
     if atom(exp):
         if type(exp) == Symbol:
-           return lookup(exp, env)
+           return lookup(exp, envs)
         elif True in [isinstance(exp, x) for x in [int, float, str, bool]]:
             return exp
         else:
@@ -22,28 +22,25 @@ def evaluate(exp, env = global_env):
     elif exp[0] == "quote":
         return exp[1]
     elif exp[0] == "if":
-        if istrue(evaluate(exp[1], env)):
-            return evaluate(exp[2], env)
+        if istrue(evaluate(exp[1], envs)):
+            return evaluate(exp[2], envs)
         else:
-            return evaluate(exp[3], env)
+            return evaluate(exp[3], envs)
     elif exp[0] == "begin":
-        return eprogn(exp[1:], env)
+        return eprogn(exp[1:], envs)
     elif exp[0] == "set!":
-        update(exp[1], env, evaluate(exp[2], env))
+        update(exp[1], envs, evaluate(exp[2], envs))
     
     elif exp[0] == "define":
         # pdb.set_trace()
-        if exp[1] in dict(env):
-            update(exp[1], env, evaluate(exp[2], env))
-        else:
-            env.insert(0, (exp[1], evaluate(exp[2])))
+        envs[0].insert(0, (exp[1], evaluate(exp[2], envs)))
 
     elif exp[0] == "lambda":
-        return make_function(exp[1], exp[2:], env)
+        return make_function(exp[1], exp[2:], envs)
 
     # exp is function application
     else:
-        return invoke(evaluate(exp[0], env), evlist(exp[1:], env))
+        return invoke(evaluate(exp[0], envs), evlist(exp[1:], envs))
 
 
 
@@ -53,41 +50,48 @@ def istrue(exp):
     else:
         return True
 
-def eprogn(exps, env):
-    results = [evaluate(exp, env) for exp in exps]
+def eprogn(exps, envs):
+    results = [evaluate(exp, envs) for exp in exps]
     return results[-1]
 
 def invoke(fn, arg_list):
     # pdb.set_trace()
     return fn(*arg_list)
 
-def evlist(l, env):
-    return [evaluate(x, env) for x in l]
+def evlist(l, envs):
+    return [evaluate(x, envs) for x in l]
 
 # update is impure.
-def update(var, env, value):
+def update(var, envs, value):
     # pdb.set_trace()
-    for i in range(len(env)):
-        if env[i][0] == var:
-            env[i] = (var, value)
-            return
-    raise Exception("No such symbol found: ", var)
-        
-def make_function(variables, body, env):
-    return lambda *values : evaluate(body[0], extend(env, variables, list(values)))
+    for i in range(len(envs)):
+        for j in range(len(envs[i])):
+            if envs[i][j][0] == var:
+                envs[i][j] = (var, value)
+                return
+    raise Exception("No such Symbol found: ", var)
 
-def lookup(var, env):
-    for u, v in env:
-        if u == var:
-            return v
+def make_function(variables, body, envs):
+    return lambda *values : evaluate(body[0], extend(envs, variables, list(values)))
+
+def lookup(var, envs):
+    for env in envs: 
+        for u, v in env:
+            if u == var:
+                return v
     raise Exception("No such binding: ", var)
 
-def extend(env, variables, values):
+def extend(envs, variables, values):
     if len(variables) != len(values):
         raise ValueError("Too few or too many values.")
     else:
         bindings = list(zip(variables, values))
-        return bindings + env
+        new_envs = [bindings]
+        for env in envs:
+            new_envs.append(env)
+        return new_envs
+
+
 
 
 
