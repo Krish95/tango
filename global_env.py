@@ -8,6 +8,7 @@ global_env = [
         ("car"   , lambda x : x[0]) ,
         ("cdr"   , lambda x : x[1:]) ,
         ("cons"  , lambda h,t : [h] + t),
+        ("list"  , lambda *x: list(x)),
         ("max"   , max) ,
         ("min"   , min) ,
         ("+"     , lambda *x: reduce(operator.add, list(x))) ,

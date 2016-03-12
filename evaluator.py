@@ -2,6 +2,7 @@ import pdb
 from scan_lexer import Symbol
 from global_env import *
 
+macros = {}
 
 def evaluate(exp, envs = [global_env]):
     #pdb.set_trace()
@@ -30,17 +31,43 @@ def evaluate(exp, envs = [global_env]):
         return eprogn(exp[1:], envs)
     elif exp[0] == "set!":
         update(exp[1], envs, evaluate(exp[2], envs))
-    
     elif exp[0] == "define":
-        # pdb.set_trace()
         envs[0].insert(0, (exp[1], evaluate(exp[2], envs)))
-
     elif exp[0] == "lambda":
         return make_function(exp[1], exp[2:], envs)
+    
+    elif exp[0] == "macro":
+        return (exp[1], exp[2])
+
+
+    # exp is a macro expansion
+    elif type(evaluate(exp[0], envs)) == tuple:
+        f = evaluate(exp[0], envs)
+        # pdb.set_trace()
+        expanded_form = macro_expand(f[0], exp[1:], f[1], envs)
+        return evaluate(evaluate(expanded_form, envs), envs)
 
     # exp is function application
     else:
         return invoke(evaluate(exp[0], envs), evlist(exp[1:], envs))
+
+def macro_expand(variables, values, body, envs):
+    if len(variables) != len(values):
+        raise ValueError("Too few or too many values.")
+    def substitute(exp):
+        nonlocal variables, values
+        if atom(exp):
+            if exp in variables:
+                return [Symbol("quote"), values[variables.index(exp)]]
+            else:
+                return exp
+        else:
+            return [substitute(e) for e in exp]
+
+    result = [substitute(exp) for exp in body]
+    return result
+
+
 
 
 
@@ -73,6 +100,7 @@ def update(var, envs, value):
 
 def make_function(variables, body, envs):
     return lambda *values : evaluate(body[0], extend(envs, variables, list(values)))
+
 
 def lookup(var, envs):
     for env in envs: 
