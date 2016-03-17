@@ -1,15 +1,14 @@
 
 import scan_lexer,evaluator
 import readline
-import re,pdb
+import re,pdb,sys
 
 def read_form():
 
     unmatched_parantheses = 0
     lines = ""
-    print("=>",end="")
     while True:
-        line = input()
+        line = input("=>")
         lines = lines + line.rstrip("/")
         if line.endswith("/"):
             lines = lines + ' '
@@ -24,8 +23,7 @@ def str_format(ast):
             if isinstance(l,list):
                   ast[ind_out]=str_format(l)
             elif scan_lexer.is_str(l):
-                  ind_in = ast[ind_out].index(x)
-                  ast[ind_out][ind_in] = str(x).strip('\.')  
+                  ast[ind_out]= str(l).strip('\.')  
       return ast           
 
 class REPL:
@@ -96,7 +94,11 @@ class REPL:
 
             for expr in ast:
                # Print the evaluation of the expression in scope.evaluate(expression)
-               print(evaluator.evaluate(expr))
+                try:                    
+                    print(evaluator.evaluate(expr))
+                except Exception as e:
+                    print(str(e))
+
 
     def completer(self, input, state):
         tokens = scan_lexer.tokenize(input)
