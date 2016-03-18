@@ -189,14 +189,11 @@ def prstree_balance(tokens):
             lists[depth-1].append(lists[depth])
             del(lists[depth])
             depth -= 1
-            if depth < 0:
-                raise Exception("Unexpected )")
-                return
         else:
             lists[depth].append(tokens[i])
 
         i += 1
 
-    return lists[0]
+    return (lists[0],depth)
 
 

@@ -3,9 +3,13 @@ from scan_lexer import Symbol
 from global_env import *
 
 macros = {}
+scope = []
 
 def evaluate(exp, envs = [global_env]):
-    #pdb.set_trace()
+
+    #Use the global scope list
+    global scope
+
     # Is exp an atom?
     if atom(exp):
         if type(exp) == Symbol:
@@ -18,7 +22,6 @@ def evaluate(exp, envs = [global_env]):
     # Is exp the null list?
     if exp == []:
         return []
-
     # Is exp is a special form?
     elif exp[0] == "quote":
         return exp[1]
@@ -35,21 +38,21 @@ def evaluate(exp, envs = [global_env]):
         envs[0].insert(0, (exp[1], evaluate(exp[2], envs)))
     elif exp[0] == "lambda":
         return make_function(exp[1], exp[2:], envs)
-    
     elif exp[0] == "macro":
         return (exp[1], exp[2])
-
-
     # exp is a macro expansion
     elif type(evaluate(exp[0], envs)) == tuple:
         f = evaluate(exp[0], envs)
         # pdb.set_trace()
         expanded_form = macro_expand(f[0], exp[1:], f[1], envs)
         return evaluate(evaluate(expanded_form, envs), envs)
-
     # exp is function application
     else:
         return invoke(evaluate(exp[0], envs), evlist(exp[1:], envs))
+
+    #Preserve current scope
+    scope = [str(inner[0]) for outer in envs for inner in outer]
+
 
 def macro_expand(variables, values, body, envs):
     if len(variables) != len(values):
@@ -66,10 +69,6 @@ def macro_expand(variables, values, body, envs):
 
     result = [substitute(exp) for exp in body]
     return result
-
-
-
-
 
 def istrue(exp):
     if exp == False:
