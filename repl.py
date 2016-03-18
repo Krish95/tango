@@ -40,7 +40,7 @@ class REPL:
             ast,balance = scan_lexer.prstree_balance(tokens)
 
             if balance < 0:
-                print("Exception: Unexpected ) ")
+                print("Exception: Cannot close more than opened parantheses")
                 continue
             elif balance > 0:
                 print("Exception: All opened parantheses must be closed")
