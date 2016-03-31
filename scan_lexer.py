@@ -107,21 +107,15 @@ def find_token(line, tokens):
 
 def _tokenize(line, tokens):
     
-    #pdb.set_trace()
     line = line.lstrip()
 
     line = raw(line)
-
-    # print(line)
     
     line = line.replace("\\",'/')
 
-
     line = line.replace('/"',".")
 
-    #print(line)
-
-    # print(line)
+    line = line.replace("/'",".")
 
     if len(line) == 0:
         return

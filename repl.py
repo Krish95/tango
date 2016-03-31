@@ -2,6 +2,7 @@
 import scan_lexer,evaluator
 import readline
 import re,pdb,sys     
+from global_env import *
 
 class REPL:
 
@@ -40,10 +41,10 @@ class REPL:
             ast,balance = scan_lexer.prstree_balance(tokens)
 
             if balance < 0:
-                print("Exception: Cannot close more than opened parantheses")
+                print("Exception: Cannot close more than opened parentheses")
                 continue
             elif balance > 0:
-                print("Exception: All opened parantheses must be closed")
+                print("Exception: All opened parentheses must be closed")
                 continue
 
             """ Replacing the string format"""
@@ -80,7 +81,7 @@ class REPL:
         """Supply known_names in the present scope add the variables present too.
         After adding Scope."""
 
-        known_names = ["quote","if","begin","set!","lambda","define","macro"]
+        known_names = ["quote","if","begin","set!","lambda","define","macro"] + [str(x[0]) for x in global_env]
         known_names.extend(evaluator.scope)
 
         return [var for var in known_names if var.startswith(name)]
