@@ -32,7 +32,11 @@ class REPL:
     
         while True:
             
-            line = read_form()
+            try:
+                line = read_form()
+            except (KeyboardInterrupt,EOFError) as e:
+                print("\nMoriturus te saluto.")
+                exit(0)
 
             tokens = scan_lexer.tokenize(line)
 
@@ -81,7 +85,7 @@ class REPL:
         """Supply known_names in the present scope add the variables present too.
         After adding Scope."""
 
-        known_names = ["quote","if","begin","set!","lambda","define","macro"] + [str(x[0]) for x in global_env]
+        known_names = ["quote","if","begin","set!","lambda","define","macro","exit","load"] + [str(x[0]) for x in global_env]
         known_names.extend(evaluator.scope)
 
         return [var for var in known_names if var.startswith(name)]
@@ -90,12 +94,12 @@ def read_form():
 
     unmatched_parantheses = 0
     lines = ""
+    line = input("=>")
     while True:
-        line = input("=>")
         lines = lines + line.rstrip("/")
         if line.endswith("/"):
             lines = lines + ' '
-            print("... ",end="")  
+            line = input("... ") 
         else:
             return lines   
 

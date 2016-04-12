@@ -140,6 +140,7 @@ def tokenize(line):
     return tokens
 
 def tokenize_from_file(fname):
+    print("File being loaded is: ",fname)
     line_num = 0
     tokens = []
     for line in open(fname).read().splitlines():

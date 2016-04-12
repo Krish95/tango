@@ -1,6 +1,7 @@
 import pdb
-from scan_lexer import Symbol
+from scan_lexer import *
 from global_env import *
+from sys import exit
 
 macros = {}
 scope = []
@@ -22,6 +23,13 @@ def evaluate(exp, envs = [global_env]):
     # Is exp the null list?
     if exp == []:
         return []
+    elif exp[0] == "exit":
+        print("Moriturus te saluto.")
+        exit(0)
+    elif exp[0] == "load":
+        temp,dummy = prstree_balance(tokenize_from_file(str(exp[1]+".scm")))
+        for x in temp:
+            evaluate(x)
     # Is exp is a special form?
     elif exp[0] == "quote":
         return exp[1]
