@@ -1,5 +1,17 @@
 import re
+import pdb
 from collections import defaultdict
+
+class Str:
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return str(self.name)
+
+    def __eq__(self, a_string):
+        return self.name == a_string
 
 class Symbol:
 
@@ -12,6 +24,11 @@ class Symbol:
     def __eq__(self, a_string):
         return self.name == a_string
 
+    def __hash__(self):
+        return hash(str(self.name))
+
+def is_str(value):
+    return isinstance(value,Str)
 
 def bool_convert(value):
     return True if '#t' == value else False
@@ -55,6 +72,7 @@ def raw(text):
     return new_string
 
 TOKEN_TYPES = (
+    (Str,re.compile('(\..*?\.)')), #String class
     (bool_convert, re.compile('(#[tf])')),
     (char_convert,re.compile(r'#/(\w)')),
     (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
@@ -92,12 +110,12 @@ def _tokenize(line, tokens):
     line = line.lstrip()
 
     line = raw(line)
-
-    # print(line)
-
+    
     line = line.replace("\\",'/')
 
-    # print(line)
+    line = line.replace('/"',".")
+
+    line = line.replace("/'",".")
 
     if len(line) == 0:
         return
@@ -122,6 +140,7 @@ def tokenize(line):
     return tokens
 
 def tokenize_from_file(fname):
+    print("File being loaded is: ",fname)
     line_num = 0
     tokens = []
     for line in open(fname).read().splitlines():
@@ -133,6 +152,24 @@ def tokenize_from_file(fname):
             raise Exception("Lexer-Error on Line %d: \n%s" % (line_num, line))
 
     return tokens
+
+# def prstree_balance(tokens,depth=0):
+#     "Read an expression from a sequence of tokens."
+#     if len(tokens) == 0:
+#         raise SyntaxError('EOF error')
+#     token = tokens.pop(0)
+#     if '(' == token:
+#         lists = defaultdict(list)  
+#         depth+=1      
+#         while tokens[0] != ')':
+#             lists[depth-1].append(prstree_balance(tokens))
+#         depth-=1
+#         tokens.pop(0) # pop off ')'
+#         return lists[0]
+#     elif ')' == token:
+#         raise SyntaxError('Mismatched )')
+#     else:
+#         return token
 
 def prstree_balance(tokens):
 
@@ -152,4 +189,6 @@ def prstree_balance(tokens):
 
         i += 1
 
-    return (lists[0], depth)
+    return (lists[0],depth)
+
+

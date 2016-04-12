@@ -1,3 +1,0 @@
-(defun (greet x)
-    (print "Hello ")
-    (print x))
